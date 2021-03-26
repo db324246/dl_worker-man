@@ -45,13 +45,13 @@ export default {
   methods: {
     // 登录提交
     submitForm (formName) {
-      // eslint-disable-next-line consistent-return
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const queryObj = Object.assign({}, this.ruleForm)
 
           loginSys(queryObj).then(res => {
             this.$store.commit('SAVELOGININFO', res)
+            this.$store.commit('INITROUTES')
             this.$router.push('/home')
           }).catch(err => console.log(err))
         } else {

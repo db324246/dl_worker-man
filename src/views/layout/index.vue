@@ -19,9 +19,9 @@
           <span>{{localtime}}</span>
         </div>
         <div class="userinfo">
-          <span style="margin-right: 20px;">
+          <router-link style="margin-right: 20px;" :to="`/userInfo/${userInfo.id}`">
             <i class="el-icon-s-custom"></i>{{userInfo.username}}
-          </span>
+          </router-link>
           <el-button type="danger" size="mini" @click="logout"> 退出 </el-button>
         </div>
       </el-header>
@@ -79,10 +79,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        loginOutSys().then(res => {
-          if (res.success) {
-            this.$store.commit('removeLoginInfo')
-          }
+        loginOutSys(this.$store.state.userInfo.id).then(res => {
+          this.$store.commit('CLEARLOGININFO')
+          this.$router.push('/')
         }).catch(err => console.log(err))
       }).catch(() => {
         this.message({

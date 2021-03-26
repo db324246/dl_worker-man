@@ -1,6 +1,6 @@
 import axios from 'axios'
 import router from '@/router'
-import { Message } from 'element-ui';
+import { Message, MessageBox } from 'element-ui'
 import store from '@/store'
 
 const http = axios.create({
@@ -24,8 +24,8 @@ const http = axios.create({
 // axios.defaults.timeout = 10000
 
 // post请求头
-http.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
+http.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+http.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'
 
 const errorHandle = (status, message) => {
   switch (status) {
@@ -33,41 +33,40 @@ const errorHandle = (status, message) => {
     // 未登录则跳转登录页面，并携带当前页面的路径
     // 在登录成功后返回当前页面，这一步需要在登录页操作。
     case 401:
-      // router.replace({
-      //   path: '/login',
-      //   query: { redirect: router.currentRoute.fullPath }
-      // });
-      break;
+      console.log(router)
+      Message({
+        type: 'error',
+        message
+      })
+      router.replace({
+        path: '/login',
+        query: { redirectPath: router.currentRoute.path }
+      })
+      break
       // 403 token过期
       // 登录过期对用户进行提示
       // 清除本地token和清空vuex中token对象
       // 跳转登录页面
     case 403:
-      this.confirm('登录过期，请重新登录', '提示', {
+      MessageBox.confirm('登录过期，请重新登录', '提示', {
         confirmButtonText: '确定',
         type: 'error'
       }).then(() => {
-        // // 清除token
-        // localStorage.removeItem('token');
-        // store.commit('loginSuccess', null);
-        // // 跳转登录页面，并将要浏览的页面fullPath传过去，登录成功后跳转需要访问的页面
-        // setTimeout(() => {
-        //   router.replace({
-        //     path: '/login',
-        //     query: {
-        //       redirect: router.currentRoute.fullPath
-        //     }
-        //   })
-        // }, 1000)
+        store.commit('CLEARLOGININFO')
+        // 跳转登录页面，并将要浏览的页面fullPath传过去，登录成功后跳转需要访问的页面
+        router.replace({
+          path: '/login',
+          query: { redirectPath: router.currentRoute.path }
+        })
       })
-      break;
+      break
       // 404请求不存在
     case 404:
       Message({
         type: 'error',
         message: '网络请求不存在'
       })
-      break;
+      break
       // 其他错误，直接抛出错误提示
     default:
       Message({
@@ -86,10 +85,10 @@ http.interceptors.request.use(
       console.log('storeToken', storeToken)
       config.headers.Authorization = storeToken
     }
-    return config;
+    return config
   },
   error => {
-    return Promise.error(error);
+    return Promise.error(error)
   })
 
 // 响应拦截器
@@ -98,7 +97,7 @@ http.interceptors.response.use(
     const { status, data, message } = response.data
 
     if (status === 200) {
-      return Promise.resolve(data);
+      return Promise.resolve(data)
     }
     errorHandle(status, message)
     return Promise.reject(message)

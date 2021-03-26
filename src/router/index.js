@@ -13,8 +13,41 @@ export const menuRoutes = [
   {
     path: '/user',
     name: 'user',
-    component: () => import(/* webpackChunkName: "login" */ '@/views/user/index.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '@/views/user/index'),
     meta: { title: '用户管理' }
+  },
+  {
+    path: '/userInfo/:id',
+    name: 'userInfo',
+    hidden: true,
+    component: () => import(/* webpackChunkName: "userInfo" */ '@/views/user/userInfo'),
+    meta: { title: '用户信息' }
+  },
+  {
+    path: '/team',
+    name: 'team',
+    component: () => import(/* webpackChunkName: "team" */ '@/views/team/index'),
+    meta: { title: '团队管理' }
+  },
+  {
+    path: '/teamForm',
+    name: 'teamForm-add',
+    hidden: true,
+    component: () => import(/* webpackChunkName: "teamForm" */ '@/views/team/teamForm'),
+    meta: { title: '团队新增' }
+  },
+  {
+    path: '/teamForm/:id',
+    name: 'teamForm-edit',
+    hidden: true,
+    component: () => import(/* webpackChunkName: "teamForm-edit" */ '@/views/team/teamForm'),
+    meta: { title: '团队编辑' }
+  },
+  {
+    path: '/workType',
+    name: 'workType',
+    component: () => import(/* webpackChunkName: "workType" */ '@/views/workType/index'),
+    meta: { title: '工种管理' }
   }
 ]
 

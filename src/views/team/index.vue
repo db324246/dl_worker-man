@@ -1,12 +1,13 @@
 <template>
   <dl-tablePage
     ref="dlTablePage"
-    :get-list="getList">
-    <el-button slot="tool-buttons" size='mini' @click='handleAdd'>添加用户</el-button>
+    :get-list="getList"
+    :has-pagenation="false">
+    <el-button slot="tool-buttons" size='mini' @click='handleAdd'>新建团队</el-button>
 
     <template slot="tool-filter">
       <div class="toolbar_filter-item">
-        用户名：
+        团队名称：
         <el-input size='mini' v-model="queryList.username" placeholder="请输入内容"></el-input>
       </div>
       <div class="toolbar_filter-item">
@@ -50,57 +51,39 @@
         </template>
       </el-table-column>
     </template>
-
-    <user-form-dialog
-      ref="userFormDialog"
-      :edit-flag="editFlag"
-      @success-handler="$ref.dlTablePage.requestData()"
-      @dialog-close="editFlag = false">
-    </user-form-dialog>
   </dl-tablePage>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { userList, deleteUser } from '@/api/user'
-import UserFormDialog from '@/components/userform/dialog'
+import { teamList } from '@/api/team'
 export default {
-  name: 'user',
-  components: {
-    UserFormDialog
-  },
+  name: 'team',
   data() {
     return {
       queryList: {
-        username: ''
-      },
-      editFlag: false
+        name: ''
+      }
     }
   },
-  computed: {
-    ...mapGetters([
-      'isSuperAdmin'
-    ])
+  created() {
+
   },
   methods: {
     handleAdd() {
-      this.$refs.userFormDialog.showDialog()
+      this.$router.push('/teamForm')
     },
     handleEdit(id) {
-      this.editFlag = true
-      this.$nextTick(() => {
-        this.$refs.userFormDialog.showDialog(id)
-      })
+      this.$router.push(`/teamForm/${id}`)
     },
     handleDelete(id) {
-      this.$confirm('确认删除用户?', '提示', {
+      this.$confirm('确认删除团队?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         deleteUser(id).then(res => {
           this.$message.success('删除成功')
-          this.$ref.dlTablePage.requestData()
+          this.getList()
         }).catch(err => console.log(err))
       }).catch(() => {
         this.$message({
@@ -114,7 +97,7 @@ export default {
         ...queryList,
         ...this.queryList
       }
-      userList(queryObj)
+      teamList(queryObj)
         .then(resolve)
         .catch(err => console.log(err))
     }

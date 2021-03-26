@@ -5,22 +5,23 @@ export function loginSys(data) {
   return request({
     url: '/login',
     method: 'post',
-    data: data
+    data
   })
 }
 
-// 系统初始化 --- 获取用户权限列表
-export function systemInit(id) {
+// 注册用户
+export function registerUser(data) {
   return request({
-    url: '/systemInit/' + id,
-    method: 'get'
+    url: '/register',
+    method: 'post',
+    data
   })
 }
 
 // 系统退出登录
-export function loginOutSys() {
+export function loginOutSys(id) {
   return request({
-    url: '/loginOutSys',
+    url: `/logout/${id}`,
     method: 'get'
   })
 }
