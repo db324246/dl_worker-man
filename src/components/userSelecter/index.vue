@@ -95,7 +95,7 @@ export default {
     }
   },
   created() {
-    
+
   },
   methods: {
     loadUser() {
