@@ -33,3 +33,11 @@ export function userInfo(id) {
     method: 'get'
   })
 }
+
+// 用户项目经历接口
+export function userProjects(id) {
+  return request({
+    url: `/userProjects/${id}`,
+    method: 'get'
+  })
+}

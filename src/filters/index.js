@@ -15,6 +15,10 @@ const dictMapFilter = {
     1: '队长',
     2: '副队长',
     3: '工人'
+  },
+  projectSatusFilter: {
+    0: '未开始',
+    1: '进行中'
   }
 }
 

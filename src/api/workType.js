@@ -25,3 +25,11 @@ export function updateType(data) {
     data
   })
 }
+
+// 工种分类删除接口
+export function deleteType(id) {
+  return request({
+    url: `/deleteType/${id}`,
+    method: 'post'
+  })
+}

@@ -24,6 +24,19 @@ export const menuRoutes = [
     meta: { title: '用户信息' }
   },
   {
+    path: '/projects',
+    name: 'projects',
+    component: () => import(/* webpackChunkName: "projects" */ '@/views/projects/index'),
+    meta: { title: '项目管理' }
+  },
+  {
+    path: '/projectInfo/:id',
+    name: 'projectInfo',
+    hidden: true,
+    component: () => import(/* webpackChunkName: "projectInfo" */ '@/views/projects/projectInfo'),
+    meta: { title: '项目详情' }
+  },
+  {
     path: '/team',
     name: 'team',
     component: () => import(/* webpackChunkName: "team" */ '@/views/team/index'),

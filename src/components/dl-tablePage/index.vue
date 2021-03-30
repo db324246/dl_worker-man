@@ -9,7 +9,11 @@
       </div>
     </div>
 
-    <el-table :data='tableData' :border="border" style='width: 100%'>
+    <el-table
+      :data='tableData'
+      :border="border"
+      style='width: 100%'
+      @selection-change="$emit('selection-change', $event)">
       <slot name="table-columns"></slot>
     </el-table>
 
@@ -74,9 +78,13 @@ export default {
         this.getList(params, r)
       })
         .then(res => {
-          this.tableData = res.list
-          this.total = res.total
+          this.tableData = res.list || []
+          this.total = res.total || 0
         })
+    },
+    resolveData(data) {
+      this.tableData = data.list || []
+      this.total = data.total || 0
     },
     handleSearch() {
       this.queryList.pageNumber = 1

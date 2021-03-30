@@ -1,6 +1,7 @@
 <template>
   <dl-tablePage
     ref="dlTablePage"
+    :get-data-in-created="false"
     :get-list="getList">
     <el-button slot="tool-buttons" size='mini' @click='handleAdd'>添加工种类型</el-button>
 
@@ -8,12 +9,15 @@
       <el-table-column prop='name' label='工种名称' min-width="100px">
       </el-table-column>
       <el-table-column prop='pay' label='薪资' >
+        <template slot-scope="{row}">
+          <el-tag type="success">{{row.pay}} 元/天</el-tag>
+        </template>
       </el-table-column>
       <el-table-column prop='createTime' label='创建时间' min-width="120px">
       </el-table-column>
-      <el-table-column label='操作' min-width="120px">
+      <el-table-column label='操作' min-width="80px">
         <template slot-scope="{row}">
-          <el-button size='mini' type='primary' @click='handleEdit(row.id)'>编辑</el-button>
+          <el-button size='mini' type='primary' @click='handleEdit(row)'>编辑</el-button>
           <el-button v-if="isSuperAdmin" size='mini' type='danger' @click='handleDelete(row.id)'>删除</el-button>
         </template>
       </el-table-column>
@@ -46,7 +50,9 @@
 </template>
 
 <script>
-import { typeList, addType, updateType } from '@/api/workType'
+import { deepClone } from '@utils'
+import { mapGetters, mapState, mapActions } from 'vuex'
+import { addType, updateType, deleteType } from '@/api/workType'
 export default {
   name: 'workType',
   data() {
@@ -67,15 +73,31 @@ export default {
     }
   },
   computed: {
+    ...mapState(['workTypes']),
+    ...mapGetters(['isSuperAdmin']),
     dailogTitle() {
       return this.editFlag ? '编辑工种类型' : '添加工种类型'
     }
   },
-  created() {
-
+  watch: {
+    'workTypes': {
+      handler(val) {
+        this.$refs.dlTablePage && this.$refs.dlTablePage.resolveData({ list: val })
+      },
+      immediate: true
+    }
+  },
+  mounted() {
+    this.$refs.dlTablePage.resolveData({ list: this.workTypes })
   },
   methods: {
+    ...mapActions(['DICTINIT']),
     handleAdd() {
+      this.dialogVisible = true
+    },
+    handleEdit(row) {
+      this.form = deepClone(row)
+      this.editFlag = true
       this.dialogVisible = true
     },
     handleSave() {
@@ -88,18 +110,42 @@ export default {
           .then(res => {
             this.$message.success('保存成功')
             this.handleClose()
-            this.$ref.dlTablePage.requestData()
+            this.$refs.dlTablePage.requestData()
           })
           .catch(err => console.log(err))
       })
     },
-    getList(queryList, resolve) {
-      typeList()
-        .then(res => resolve({ list: res }))
-        .catch(err => console.log(err))
+    handleDelete(id) {
+      this.$confirm('确认删除工种类型？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteType(id).then(res => {
+          this.$message.success('删除成功')
+          this.$refs.dlTablePage.requestData()
+        }).catch(err => console.log(err))
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    async getList(queryList, resolve) {
+      const list = await this.DICTINIT()
+      resolve({ list })
     },
     handleClose() {
       this.dialogVisible = false
+      this.$nextTick(() => {
+        this.editFlag = true
+        this.form = {
+          name: '',
+          pay: 0
+        }
+        this.$nextTick(this.$refs.form.clearValidate)
+      })
     }
   }
 }

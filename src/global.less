@@ -26,6 +26,10 @@ a {
   justify-content: space-between;
   height: 50px;
   padding: 0 10px;
+  .toolbar_handler {
+    display: flex;
+    align-items: center;
+  }
   .toolbar_filter-row {
     display: flex;
     align-items: center;
@@ -40,6 +44,13 @@ a {
   }
 }
 
+.detail-form {
+  padding-left: 80px;
+  .el-form-item {
+    margin-bottom: 0;
+  }
+}
+
 .el-dialog {
   margin-bottom: 100px;
 }
@@ -47,4 +58,8 @@ a {
 .pagination-container {
   margin: 20px 0 40px;
   text-align: right;
+}
+
+.w-300 {
+  width: 300px!important;
 }

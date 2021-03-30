@@ -5,43 +5,19 @@
     :has-pagenation="false">
     <el-button slot="tool-buttons" size='mini' @click='handleAdd'>新建团队</el-button>
 
-    <template slot="tool-filter">
-      <div class="toolbar_filter-item">
-        团队名称：
-        <el-input size='mini' v-model="queryList.username" placeholder="请输入内容"></el-input>
-      </div>
-      <div class="toolbar_filter-item">
-        <el-button size='mini' type='primary' @click='$refs.dlTablePage.handleSearch()'>搜索</el-button>
-      </div>
-    </template>
-
     <template slot="table-columns">
-      <el-table-column prop='username' label='姓名' min-width="100px">
+      <el-table-column prop='name' label='团队名称' min-width="100px">
         <template slot-scope="{row}">
-          <router-link class="link-cursor" :to="`/userInfo/${row.id}`">{{row.username}}</router-link>
+          <span class="link-cursor" >{{row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column prop='sex' label='性别' >
+      <el-table-column prop='createUsername' label='创建人' min-width="120px">
+      </el-table-column>
+      <el-table-column prop='createTime' label='创建时间' min-width="120px">
+      </el-table-column>
+      <el-table-column prop='status' label='团队人数'>
         <template slot-scope="{row}">
-          {{row.sex | sexFilter}}
-        </template>
-      </el-table-column>
-      <el-table-column prop='telephone' label='手机号码' min-width="120px">
-      </el-table-column>
-      <el-table-column prop='createTime' label='注册/创建时间' min-width="120px">
-      </el-table-column>
-      <el-table-column prop='identityId' label='身份'>
-        <template slot-scope="{row}">
-          <el-tag v-if="row.identityId === 0">{{row.identityId | identityIdFilter}}</el-tag>
-          <el-tag v-else-if="row.identityId === 1" type="success">{{row.identityId | identityIdFilter}}</el-tag>
-          <el-tag v-else-if="row.identityId === 2" type="info">{{row.identityId | identityIdFilter}}</el-tag>
-          <el-tag v-else type="warning">{{row.identityId | identityIdFilter}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop='status' label='状态'>
-        <template slot-scope="{row}">
-          <el-tag v-if="!row.status" type="success">{{row.status | userStatusFilter}}</el-tag>
-          <el-tag v-else type="warning">{{row.status | userStatusFilter}}</el-tag>
+          <el-tag type="success">{{row.teamNum}}人</el-tag>
         </template>
       </el-table-column>
       <el-table-column label='操作' min-width="120px">
@@ -55,7 +31,8 @@
 </template>
 
 <script>
-import { teamList } from '@/api/team'
+import { mapGetters } from 'vuex'
+import { teamList, deleteTeam } from '@/api/team'
 export default {
   name: 'team',
   data() {
@@ -65,8 +42,8 @@ export default {
       }
     }
   },
-  created() {
-
+  computed: {
+    ...mapGetters(['isSuperAdmin'])
   },
   methods: {
     handleAdd() {
@@ -81,9 +58,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteUser(id).then(res => {
+        deleteTeam(id).then(res => {
           this.$message.success('删除成功')
-          this.getList()
+          this.$refs.dlTablePage.requestData()
         }).catch(err => console.log(err))
       }).catch(() => {
         this.$message({
@@ -98,7 +75,14 @@ export default {
         ...this.queryList
       }
       teamList(queryObj)
-        .then(resolve)
+        .then(res => {
+          res = res.map(i => {
+            i.memberJson = JSON.parse(i.memberJson)
+            i.teamNum = i.memberJson.length || 0
+            return i
+          })
+          resolve({ list: res })
+        })
         .catch(err => console.log(err))
     }
   }

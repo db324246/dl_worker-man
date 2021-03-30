@@ -71,6 +71,10 @@ export default {
       return timeParse(new Date(), '{y}年{m}月{d}日 {h}时{i}分 星期{a}')
     }
   },
+  created() {
+    // 工种字典初始化
+    this.$store.dispatch('DICTINIT')
+  },
   methods: {
     // 退出登录
     logout () {

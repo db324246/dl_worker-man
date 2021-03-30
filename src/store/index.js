@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { menuRoutes } from '@/router'
 import { getCurrent } from '@/api/login'
+import { typeList } from '@/api/workType'
 
 Vue.use(Vuex)
 
@@ -23,7 +24,8 @@ export default new Vuex.Store({
   state: {
     token: '',
     userInfo: {},
-    rootList: []
+    rootList: [],
+    workTypes: []
   },
   getters: {
     userId(state) {
@@ -53,6 +55,10 @@ export default new Vuex.Store({
     // 初始化菜单栏路由列表
     INITROUTES(state) {
       state.rootList = recursionRoute(menuRoutes)
+    },
+    // 存储工种字典
+    GETWORKTYPES(state, data) {
+      state.workTypes = data
     }
   },
   actions: {
@@ -63,6 +69,17 @@ export default new Vuex.Store({
           commit('INITROUTES')
           commit('SAVELOGININFO', res)
         })
+    },
+    // 工种字典初始化
+    async DICTINIT({ commit }) {
+      try {
+        const res = await typeList()
+        commit('GETWORKTYPES', res)
+        return res
+      } catch (error) {
+        console.log('字典获取失败', error)
+        return []
+      }
     }
   }
 })
